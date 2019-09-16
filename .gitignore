@@ -1,0 +1,54 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+.eggs
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# JS packages
+bower_components
+node_modules
+libs
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+cover
+tests/coverage
+assets/coverage
+htmlcov
+coverage.xml
+nosetests.xml
+
+# Translations
+*.mo
+*.pot
+
+# Mr Developer
+.cache
+.env
+.project
+.pydevproject
+.idea
+.containers
+.mypy_cache
+*.retry
+*.sublime-project
+*.sublime-workspace
