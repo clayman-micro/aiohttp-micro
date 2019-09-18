@@ -9,7 +9,9 @@ setup(
     licence="MIT",
     author="Kirill Sumorokov",
     author_email="sumorokov.k@gmail.com",
-    description="Prometheus metrics for aiohttp-based microservices.",
+    description="""
+        Collection of useful things for `aiohttp.web`__-based microservices.
+    """,
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
@@ -23,7 +25,8 @@ setup(
         "aiohttp",
         "click",
         "sentry-sdk",
-        "uvloop"
+        "ujson",
+        "uvloop",
     ],
     extras_require={
         "lint": [

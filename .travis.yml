@@ -1,0 +1,23 @@
+---
+
+dist: xenial
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+sudo: required
+
+language: python
+
+install:
+  - pip install --upgrade tox
+
+script:
+  - tox
+
+jobs:
+  include:
+    - stage: test
+      python: 3.7
+      env:
+        - TOXENV=py37
