@@ -25,18 +25,17 @@ install: clean
 	flit install -s --python $WORKON_HOME/aiohttp_micro
 
 lint:
-	flake8 aiohttp_micro tests
-	mypy aiohttp_micro tests
+	poetry run flake8 src/aiohttp_micro tests
+	poetry run mypy src/aiohttp_micro tests
 
 test:
-	py.test
+	poetry run py.test tests
 
 test-all:
 	tox
 
 build: clean-build
-	python setup.py sdist
-	python setup.py bdist_wheel
+	poetry build
 
 release: build
-	twine upload dist/*
+	poetry publish

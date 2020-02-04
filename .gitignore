@@ -50,5 +50,4 @@ nosetests.xml
 .containers
 .mypy_cache
 *.retry
-*.sublime-project
-*.sublime-workspace
+.vscode/tags

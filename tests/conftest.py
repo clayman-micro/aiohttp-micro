@@ -4,7 +4,7 @@ import pkg_resources  # type: ignore
 import pytest  # type: ignore
 from aiohttp import web
 
-from aiohttp_micro import setup
+from aiohttp_micro import AppConfig, setup
 
 
 @pytest.fixture(scope="function")
@@ -21,8 +21,10 @@ def distribution(monkeypatch):
 
 @pytest.yield_fixture(scope="function")
 def app(loop, distribution):
+    config = AppConfig()
+
     app = web.Application()
-    setup(app, app_name="foo")
+    setup(app, app_name="foo", config=config)
 
     runner = web.AppRunner(app)
     loop.run_until_complete(runner.setup())

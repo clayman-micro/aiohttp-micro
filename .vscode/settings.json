@@ -1,0 +1,54 @@
+{
+  "files.exclude": {
+      ".cache": true,
+      ".idea": true,
+      ".mypy_cache": true,
+      ".python-version": true,
+      ".scannerwork": true,
+      ".sonarlint": true,
+      ".vagrant": true,
+      ".vscode": true,
+      "**/__pycache__": true,
+      "**/.cache": true,
+      "**/.coverage": true,
+      "**/.DS_Store": true,
+      "**/.idea": true,
+      "**/.mypy_cache": true,
+      "**/.pytest_cache": true,
+      "**/.sonarlint": true,
+      "**/.tox": true,
+      "**/.venv": true,
+      "**/*.egg-info": true,
+      "**/*.py[co]": true,
+      "**/*.retry": true,
+      "**/coverage*": true,
+      "**/dist": true,
+      "**/htmlcov": true,
+      "**/node_modules": true,
+      "**/venv": true,
+  },
+
+  "editor.rulers": [80],
+
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "80"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
+  "python.workspaceSymbols.exclusionPatterns": [
+    "**/site-packages/**",
+    ".tox/**"
+  ],
+
+  "python.pythonPath": "${workspaceFolder}/.venv/bin/python3.8",
+  "python.autoComplete.extraPaths": [
+      "${workspaceFolder}",
+      "${workspaceFolder}/.venv/lib/python3.8",
+      "${workspaceFolder}/.venv/lib/python3.8/site-packages"
+  ],
+
+  "[python]": {
+      "editor.formatOnSave": true
+  }
+}

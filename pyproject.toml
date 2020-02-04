@@ -1,0 +1,50 @@
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "aiohttp_micro"
+version = "0.1.0"
+description = "Collection of useful things for aiohttp.web-based microservices"
+authors = ["Kirill Sumorokov <sumorokov.k@gmail.com>"]
+license = "MIT"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Framework :: AsyncIO",
+]
+packages = [
+    { include = "aiohttp_micro", from = "src" },
+]
+
+[tool.poetry.dependencies]
+aiodns = "^2.0.0"
+aiohttp = "^3.6.0"
+attrs = "^19.1.0"
+click = "^7.0"
+config = {git = "https://github.com/clayman74/config.git", rev = "v0.1.1"}
+python = "^3.8"
+sentry-sdk = "^0.12.2"
+structlog = "^20.1.0"
+ujson = "^1.35"
+uvloop = "^0.14.0"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+coverage = "*"
+faker = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-builtins-unleashed = "*"
+flake8-comprehensions = "*"
+flake8-import-order = "*"
+flake8-print = "*"
+flake8-pytest = "*"
+mypy = "*"
+pytest = "*"
+pytest-aiohttp = "*"
+pytest-postgres = "*"
+rope = "*"

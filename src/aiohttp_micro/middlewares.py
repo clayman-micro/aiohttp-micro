@@ -11,7 +11,10 @@ async def catch_exceptions_middleware(
     try:
         return await handler(request)
     except Exception as exc:
-        capture_exception(exc)
+        if "config" in request.app and request.app["config"].debug:
+            raise exc
+        else:
+            capture_exception(exc)
 
         if isinstance(exc, (web.HTTPClientError,)):
             raise

@@ -3,6 +3,8 @@ import socket
 import click
 from aiohttp import web
 
+from aiohttp_micro.tools.consul import Consul, Service
+
 
 def get_address(self, default: str = "127.0.0.1") -> str:
     try:
@@ -43,8 +45,15 @@ def run(ctx, host, port):
     except ValueError:
         raise RuntimeError("Port should be numeric")
 
-    runner = web.AppRunner(app, handle_signals=True, access_log=None)
+    service = Service(
+        name=app["app_name"], hostname=app["hostname"], host=address, port=port
+    )
 
+    config = app["config"]
+    consul = Consul(config.consul.host, config.consul.port)
+    loop.run_until_complete(consul.register(service))
+
+    runner = web.AppRunner(app, handle_signals=True, access_log=None)
     loop.run_until_complete(runner.setup())
 
     try:
@@ -54,6 +63,7 @@ def run(ctx, host, port):
     except KeyboardInterrupt:
         pass
     finally:
+        loop.run_until_complete(consul.deregister(service))
         loop.run_until_complete(runner.cleanup())
 
     loop.close()
