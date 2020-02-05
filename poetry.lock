@@ -152,18 +152,14 @@ version = "0.4.3"
 
 [[package]]
 category = "main"
-description = "Framework agnostic configuration for apps and microservices"
+description = ""
 name = "config"
 optional = false
-python-versions = "*"
+python-versions = "^3.6"
 version = "0.1.1"
 
-[package.extras]
-develop = ["flake8 (3.6.0)", "flake8-bugbear (18.8.0)", "flake8-builtins-unleashed (1.3.1)", "flake8-comprehensions (1.4.1)", "flake8-import-order (0.18)", "flake8-print (3.1.0)", "mypy (0.650)"]
-test = ["pytest (4.0.2)", "coverage (4.5.2)"]
-
 [package.source]
-reference = "25b244eb4ede6d077f5175e5efb0351021927a52"
+reference = "9c01fd6c6d1020c3d773c8688be45f1aacbdd431"
 type = "git"
 url = "https://github.com/clayman74/config.git"
 [[package]]
@@ -673,7 +669,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "0003c7761292a7ab6eb26bb36dce49a12a4a9ed02be3b258d4ee97176f4b50e3"
+content-hash = "044f728746f64ccdeab914fe945eb40bfc0b482c57b3ed1c14dc5d3235f5cc42"
 python-versions = "^3.6"
 
 [metadata.files]
