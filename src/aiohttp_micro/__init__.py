@@ -20,7 +20,7 @@ structlog.configure(
 
 
 class AppConfig(config.Config):
-    consul = config.NestedField(config.ConsulConfig, key="consul")
+    consul = config.NestedField(config.ConsulConfig)
     debug = config.BoolField(default=False)
     sentry_dsn = config.StrField()
 

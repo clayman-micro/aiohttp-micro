@@ -32,6 +32,7 @@ sentry-sdk = "^0.12.2"
 structlog = "^20.1.0"
 ujson = "^1.35"
 uvloop = "^0.14.0"
+marshmallow = "^3.4.0"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
