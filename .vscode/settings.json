@@ -25,6 +25,7 @@
       "**/dist": true,
       "**/htmlcov": true,
       "**/node_modules": true,
+      "**/pip-wheel-metadata": true,
       "**/venv": true,
   },
 
