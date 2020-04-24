@@ -50,7 +50,9 @@ def setup(
 
     if "config" in app and app["config"].sentry_dsn:
         sentry_sdk.init(
-            dsn=app["config"].sentry_dsn, integrations=[AioHttpIntegration()]
+            dsn=app["config"].sentry_dsn,
+            integrations=[AioHttpIntegration()],
+            release=app["distribution"].version,
         )
 
         with sentry_sdk.configure_scope() as scope:
