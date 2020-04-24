@@ -1,4 +1,5 @@
 import socket
+from typing import Optional
 
 import config  # type: ignore
 import pkg_resources
@@ -25,12 +26,20 @@ class AppConfig(config.Config):
     sentry_dsn = config.StrField()
 
 
-def setup(app: web.Application, app_name: str, config: config.Config) -> None:
+def setup(
+    app: web.Application,
+    app_name: str,
+    config: config.Config,
+    package_name: Optional[str] = None,
+) -> None:
+    if not package_name:
+        package_name = app_name
+
     app["config"] = config
 
     app["app_name"] = app_name
     app["hostname"] = socket.gethostname()
-    app["distribution"] = pkg_resources.get_distribution(app_name)
+    app["distribution"] = pkg_resources.get_distribution(package_name)
 
     logger = structlog.get_logger()
     app["logger"] = logger.bind(
@@ -43,6 +52,9 @@ def setup(app: web.Application, app_name: str, config: config.Config) -> None:
         sentry_sdk.init(
             dsn=app["config"].sentry_dsn, integrations=[AioHttpIntegration()]
         )
+
+        with sentry_sdk.configure_scope() as scope:
+            scope.set_tag("app_name", app["app_name"])
 
     app.middlewares.append(catch_exceptions_middleware)  # type: ignore
 
