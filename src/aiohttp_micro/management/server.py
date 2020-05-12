@@ -89,6 +89,6 @@ def run(ctx, host, port, tags):
         loop.run_until_complete(consul.deregister(service))
         loop.run_until_complete(runner.cleanup())
 
-        app["logger"].info(f"Shutdown application")
+        app["logger"].info("Shutdown application")
 
     loop.close()
