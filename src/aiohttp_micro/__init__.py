@@ -1,7 +1,7 @@
 import socket
 from typing import Optional
 
-import config  # type: ignore
+import config
 import pkg_resources
 import sentry_sdk
 import structlog  # type: ignore
@@ -21,7 +21,7 @@ structlog.configure(
 
 
 class AppConfig(config.Config):
-    consul = config.NestedField(config.ConsulConfig)
+    consul = config.NestedField[config.ConsulConfig](config.ConsulConfig)
     debug = config.BoolField(default=False)
     sentry_dsn = config.StrField()
 
