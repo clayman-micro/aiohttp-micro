@@ -156,13 +156,13 @@ description = ""
 name = "config"
 optional = false
 python-versions = "^3.6"
-version = "0.2.3"
+version = "0.2.4"
 
 [package.dependencies]
 ujson = "^1.35"
 
 [package.source]
-reference = "1c1feb2f01b096b8a9b06573b1c8529c6a394236"
+reference = "63c6ee3c8c8f37033bf52b5b6bbb1770a5a96695"
 type = "git"
 url = "https://github.com/clayman083/config.git"
 [[package]]
@@ -681,7 +681,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "fa81e23d8502f5cecb47180bc60416bd21961ca444b1d3afe7c46c3d83d7575d"
+content-hash = "1842e2e9b1b7e4112d4db218b622616b2028d6aa5dd50ed007f244c4ed2c6dd2"
 python-versions = "^3.6"
 
 [metadata.files]

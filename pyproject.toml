@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "aiohttp_micro"
-version = "0.2.7"
+version = "0.2.8"
 description = "Collection of useful things for aiohttp.web-based microservices"
 authors = ["Kirill Sumorokov <sumorokov.k@gmail.com>"]
 license = "MIT"
@@ -26,7 +26,7 @@ aiohttp = "^3.6.0"
 attrs = "^19.1.0"
 cchardet = "^2.1.4"
 click = "^7.0"
-config = {git = "https://github.com/clayman083/config.git", rev = "v0.2.3"}
+config = {git = "https://github.com/clayman083/config.git", rev = "v0.2.4"}
 python = "^3.6"
 sentry-sdk = "^0.12.2"
 structlog = "^20.1.0"
