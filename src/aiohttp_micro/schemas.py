@@ -57,7 +57,7 @@ class EntitySchema(Schema, Generic[ET]):
     @pre_dump
     def serialize_entity(self, entity: ET, **kwargs) -> JSON:
         if isinstance(entity, self.entity_cls):
-            return attr.asdict(entity)
+            return attr.asdict(entity, recurse=False)
         else:
             raise ValueError("Unserializable entity")
 
