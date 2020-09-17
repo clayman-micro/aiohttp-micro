@@ -26,7 +26,7 @@
       "**/htmlcov": true,
       "**/node_modules": true,
       "**/pip-wheel-metadata": true,
-      "**/venv": true,
+      "**/venv": true
   },
 
   "editor.rulers": [80],
@@ -42,11 +42,18 @@
     ".tox/**"
   ],
 
-  "python.pythonPath": "${workspaceFolder}/.venv/bin/python3.8",
+  "python.pythonPath": "${workspaceFolder}/.venv/bin/python3",
+
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/.venv/lib/python3.8",
+    "${workspaceFolder}/.venv/lib/python3.8/site-packages"
+  ],
+
   "python.autoComplete.extraPaths": [
-      "${workspaceFolder}",
-      "${workspaceFolder}/.venv/lib/python3.8",
-      "${workspaceFolder}/.venv/lib/python3.8/site-packages"
+    "${workspaceFolder}",
+    "${workspaceFolder}/.venv/lib/python3.8",
+    "${workspaceFolder}/.venv/lib/python3.8/site-packages"
   ],
 
   "[python]": {

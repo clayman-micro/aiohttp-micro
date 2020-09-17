@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from enum import Enum
 
-import attr
 import pytest  # type: ignore
 from marshmallow import fields, Schema, ValidationError
 
@@ -36,9 +36,9 @@ def test_load_enum_failed(schema, status):
         schema.load({"status": status})
 
 
-@attr.s(slots=True, kw_only=True)
+@dataclass
 class Tag(Entity):
-    name: str = attr.ib()
+    name: str
 
 
 @pytest.fixture(scope="function")
@@ -55,7 +55,7 @@ def tag_schema():
 def test_load_entity(tag_schema):
     tag = tag_schema.load({"name": "Food"})
 
-    assert tag == Tag(name="Food")
+    assert tag == Tag(key=0, name="Food")
 
 
 @pytest.mark.unit

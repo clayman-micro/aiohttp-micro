@@ -1,7 +1,7 @@
+from dataclasses import asdict
 from enum import Enum
 from typing import Any, Dict, Generic, Type, TypeVar
 
-import attr
 from marshmallow import (
     fields,
     post_dump,
@@ -52,12 +52,13 @@ class EntitySchema(Schema, Generic[ET]):
 
     @post_load
     def build_entity(self, payload: JSON, **kwargs) -> ET:
+        payload.setdefault("key", 0)
         return self.entity_cls(**payload)
 
     @pre_dump
     def serialize_entity(self, entity: ET, **kwargs) -> JSON:
         if isinstance(entity, self.entity_cls):
-            return attr.asdict(entity, recurse=False)
+            return asdict(entity)
         else:
             raise ValueError("Unserializable entity")
 

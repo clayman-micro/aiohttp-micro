@@ -1,17 +1,17 @@
+from dataclasses import dataclass, field
 from typing import Dict, List
 
-import attr
 import ujson
 from aiohttp import ClientSession
 
 
-@attr.dataclass(slots=True, kw_only=True)
+@dataclass
 class Service:
     name: str
     hostname: str
     host: str = "127.0.0.1"
     port: int = 5000
-    tags: List[str] = attr.ib(factory=list)
+    tags: List[str] = field(default_factory=list)
 
     @property
     def service_name(self) -> str:
@@ -62,3 +62,26 @@ class Consul:
                 done = resp.status == 200
 
         return done
+
+
+def register(service: Service):
+    async def ctx(app):
+        config = app["config"]
+
+        consul = Consul(config.consul.host, config.consul.port)
+
+        await consul.register(service)
+
+        app["logger"].info(
+            f"Register service {service.service_name} in Consul Catalog"
+        )
+
+        yield
+
+        await consul.deregister(service)
+
+        app["logger"].info(
+            f"Remove service {service.service_name} from Consul Catalog"
+        )
+
+    return ctx

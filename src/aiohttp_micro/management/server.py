@@ -3,7 +3,7 @@ import socket
 import click
 from aiohttp import web
 
-from aiohttp_micro.tools.consul import Consul, Service
+from aiohttp_micro.tools.consul import register, Service
 
 
 def get_address(default: str = "127.0.0.1") -> str:
@@ -29,7 +29,7 @@ def server(ctx):
 
 
 @server.command()
-@click.option("--host", default=False, help="Specify application host")
+@click.option("--host", default=None, help="Specify application host")
 @click.option("--port", default=5000, help="Specify application port")
 @click.option(
     "--tags", "-t", multiple=True, help="Specify tags for Consul Catalog"
@@ -37,12 +37,6 @@ def server(ctx):
 @click.pass_context
 def run(ctx, host, port, tags):
     app = ctx.obj["app"]
-    loop = ctx.obj["loop"]
-
-    if not host:
-        address = get_address(host)
-    else:
-        address = host
 
     try:
         port = int(port)
@@ -52,43 +46,26 @@ def run(ctx, host, port, tags):
     except ValueError:
         raise RuntimeError("Port should be numeric")
 
-    service = Service(
-        name=app["app_name"],
-        hostname=app["hostname"],
-        host=address,
-        port=port,
-        tags=tags,
+    if not host:
+        host = "127.0.0.1"
+        address = "127.0.0.1"
+    else:
+        address = get_address()
+
+    app.cleanup_ctx.append(
+        register(
+            Service(
+                name=app["app_name"],
+                hostname=app["hostname"],
+                host=address,
+                port=port,
+                tags=tags,
+            )
+        )
     )
 
-    runner = web.AppRunner(app, handle_signals=True, access_log=None)
-    loop.run_until_complete(runner.setup())
+    app["logger"].info(f"Application serving on http://{address}:{port}")
 
-    try:
-        app["logger"].info(f"Application serving on {address}")
+    web.run_app(app, host=host, port=port, print=None)
 
-        config = app["config"]
-        consul = Consul(config.consul.host, config.consul.port)
-        loop.run_until_complete(consul.register(service))
-
-        app["logger"].info(
-            f"Register service {service.service_name} in Consul Catalog",
-            service_name=service.service_name,
-        )
-
-        site = web.TCPSite(runner, address, port)
-        loop.run_until_complete(site.start())
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        app["logger"].info(
-            f"Remove service {service.service_name} from Consul Catalog",
-            service_name=service.service_name,
-        )
-
-        loop.run_until_complete(consul.deregister(service))
-        loop.run_until_complete(runner.cleanup())
-
-        app["logger"].info("Shutdown application")
-
-    loop.close()
+    app["logger"].info("Shutdown application")

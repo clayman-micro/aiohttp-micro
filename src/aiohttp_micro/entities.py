@@ -1,6 +1,6 @@
-import attr
+from dataclasses import dataclass
 
 
-@attr.s(slots=True, kw_only=True)
+@dataclass
 class Entity:
-    key: int = attr.ib(default=0, metadata={"readonly": True})
+    key: int

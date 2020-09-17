@@ -50,14 +50,13 @@ A trivial usage example:
     @click.pass_context
     def cli(ctx, debug):
         uvloop.install()
-        loop = asyncio.get_event_loop()
 
         config = AppConfig()
         config.load_from_env()
 
         config.debug = debug
 
-        app = loop.run_until_complete(make_app("foo", config))
+        app = make_app("foo", config)
 
         ctx.obj["app"] = app
         ctx.obj["config"] = config
