@@ -1,0 +1,31 @@
+---
+
+name: Tests
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8"]
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "${{ matrix.python-version }}"
+          architecture: 'x64'
+
+      - name: Install requirements
+        # Устанавливаем зависимости
+        run: pip install poetry tox tox-gh-actions
+
+      - name: "Run tests for ${{ matrix.python-version }}"
+        run: "python -m tox"
