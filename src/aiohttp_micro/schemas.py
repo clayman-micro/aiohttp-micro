@@ -59,6 +59,8 @@ class EntitySchema(Schema, Generic[ET]):
     def serialize_entity(self, entity: ET, **kwargs) -> JSON:
         if isinstance(entity, self.entity_cls):
             return asdict(entity)
+        elif isinstance(entity, dict):
+            return entity
         else:
             raise ValueError("Unserializable entity")
 
