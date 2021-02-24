@@ -4,6 +4,9 @@ from sentry_sdk import capture_exception
 from aiohttp_micro.handlers import Handler
 
 
+LOGGER = "logger"
+
+
 @web.middleware
 async def catch_exceptions_middleware(
     request: web.Request, handler: Handler
@@ -20,3 +23,25 @@ async def catch_exceptions_middleware(
             raise
 
         raise web.HTTPInternalServerError
+
+
+def logging_middleware_factory(tracing_header: str = "X-B3-Traceid"):
+    @web.middleware
+    async def logging_middleware(
+        request: web.Request, handler: Handler
+    ) -> web.Response:
+        request[LOGGER] = request.app[LOGGER]
+
+        trace_id = request.headers.get(tracing_header, None)
+        if trace_id:
+            request[LOGGER] = request.app[LOGGER].bind(trace_id=trace_id)
+
+        response = await handler(request)
+
+        request.logger.debug(
+            f"{request.method} {request.path} {response.status}"
+        )
+
+        return response
+
+    return logging_middleware

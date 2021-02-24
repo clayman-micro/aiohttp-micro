@@ -9,20 +9,34 @@ from aiohttp import web
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from aiohttp_micro.handlers import meta
-from aiohttp_micro.middlewares import catch_exceptions_middleware
+from aiohttp_micro.middlewares import (
+    catch_exceptions_middleware,
+    LOGGER,
+    logging_middleware_factory,
+)
 
 
 structlog.configure(
     processors=[
+        structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.JSONRenderer(),
     ]
 )
 
 
+class ZipkinConfig(config.Config):
+    host = config.StrField(default="localhost", env="ZIPKIN_HOST")
+    port = config.IntField(default=9411, env="ZIPKIN_PORT")
+
+    def get_address(self) -> str:
+        return f"http://{self.host}:{self.port}/api/v2/spans"
+
+
 class AppConfig(config.Config):
     consul = config.NestedField[config.ConsulConfig](config.ConsulConfig)
     debug = config.BoolField(default=False)
+    zipkin = config.NestedField[ZipkinConfig](ZipkinConfig)
     sentry_dsn = config.StrField()
 
 
@@ -42,7 +56,7 @@ def setup(
     app["distribution"] = pkg_resources.get_distribution(package_name)
 
     logger = structlog.get_logger()
-    app["logger"] = logger.bind(
+    app[LOGGER] = logger.bind(
         app_name=app["app_name"],
         hostname=app["hostname"],
         version=app["distribution"].version,
@@ -59,6 +73,7 @@ def setup(
             scope.set_tag("app_name", app["app_name"])
 
     app.middlewares.append(catch_exceptions_middleware)  # type: ignore
+    app.middlewares.append(logging_middleware_factory())
 
     app.router.add_routes(
         [
