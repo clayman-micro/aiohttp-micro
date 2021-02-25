@@ -5,7 +5,7 @@ import aiozipkin
 import click
 from aiohttp import web
 
-from aiohttp_micro.middlewares import LOGGER
+from aiohttp_micro.middlewares import LOGGER, tracing_middleware_factory
 from aiohttp_micro.tools.consul import register, Service
 
 
@@ -78,6 +78,15 @@ def run(ctx, host, port, tags):
             app["config"].zipkin.get_address(), endpoint, sample_rate=1.0,
         )
     )
+
+    app[aiozipkin.APP_AIOZIPKIN_KEY] = tracer
+
+    async def close_aiozipkin(app: web.Application) -> None:
+        await app[aiozipkin.APP_AIOZIPKIN_KEY].close()
+
+    app.on_cleanup.append(close_aiozipkin)
+
+    app.middlewares.append(tracing_middleware_factory())
 
     aiozipkin.setup(app, tracer)
 
