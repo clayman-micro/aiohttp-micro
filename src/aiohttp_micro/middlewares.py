@@ -38,7 +38,7 @@ def logging_middleware_factory(tracing_header: str = "X-B3-Traceid"):
 
         response = await handler(request)
 
-        request.logger.debug(
+        request[LOGGER].debug(
             f"{request.method} {request.path} {response.status}"
         )
 
