@@ -5,8 +5,8 @@ import aiozipkin
 import click
 from aiohttp import web
 
-from aiohttp_micro.tools.consul import register, Service
 from aiohttp_micro.middlewares import LOGGER
+from aiohttp_micro.tools.consul import register, Service
 
 
 def get_address(default: str = "127.0.0.1") -> str:
