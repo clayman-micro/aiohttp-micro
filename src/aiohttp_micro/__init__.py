@@ -9,10 +9,8 @@ from aiohttp import web
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from aiohttp_micro.web.handlers import meta
-from aiohttp_micro.web.middlewares import (
-    catch_exceptions_middleware,
-    logging_middleware_factory,
-)
+from aiohttp_micro.web.middlewares import common_middleware
+from aiohttp_micro.web.middlewares.logging import logging_middleware_factory
 
 
 structlog.configure(
@@ -27,6 +25,7 @@ structlog.configure(
 class ZipkinConfig(config.Config):
     host = config.StrField(default="localhost", env="ZIPKIN_HOST")
     port = config.IntField(default=9411, env="ZIPKIN_PORT")
+    enabled = config.BoolField(default=False, env="ZIPKIN_ENABLED")
 
     def get_address(self) -> str:
         return f"http://{self.host}:{self.port}/api/v2/spans"
@@ -70,7 +69,7 @@ def setup(
         with sentry_sdk.configure_scope() as scope:
             scope.set_tag("app_name", app["app_name"])
 
-    app.middlewares.append(catch_exceptions_middleware)  # type: ignore
+    app.middlewares.append(common_middleware)
     app.middlewares.append(logging_middleware_factory())
 
     app.router.add_get("/-/health", meta.health, name="health")
