@@ -4,8 +4,6 @@ from typing import Dict, List
 import ujson
 from aiohttp import ClientSession
 
-from aiohttp_micro.middlewares import LOGGER
-
 
 @dataclass
 class Service:
@@ -74,7 +72,7 @@ def register(service: Service):
 
         await consul.register(service)
 
-        app[LOGGER].info(
+        app["logger"].info(
             f"Register service {service.service_name} in Consul Catalog"
         )
 
@@ -82,7 +80,7 @@ def register(service: Service):
 
         await consul.deregister(service)
 
-        app[LOGGER].info(
+        app["logger"].info(
             f"Remove service {service.service_name} from Consul Catalog"
         )
 

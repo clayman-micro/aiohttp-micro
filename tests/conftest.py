@@ -14,7 +14,7 @@ def distribution(monkeypatch):
         version: str
 
     def patch_distribution(*args, **kwargs):
-        return Distribution("foo", "0.0.1.dev1")
+        return Distribution("micro", "0.0.1.dev1")
 
     monkeypatch.setattr(pkg_resources, "get_distribution", patch_distribution)
 
@@ -24,7 +24,7 @@ def app(loop, distribution):
     config = AppConfig()
 
     app = web.Application()
-    setup(app, app_name="foo", config=config)
+    setup(app, app_name="micro", config=config)
 
     runner = web.AppRunner(app)
     loop.run_until_complete(runner.setup())

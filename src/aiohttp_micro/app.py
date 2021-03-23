@@ -1,9 +1,6 @@
 from aiohttp import web
-from apispec import APISpec  # type: ignore
-from apispec.ext.marshmallow import MarshmallowPlugin  # type: ignore
 
 from aiohttp_micro import AppConfig, setup as setup_micro
-from aiohttp_micro.handlers import openapi
 
 
 def init(app_name: str, cfg: AppConfig) -> web.Application:

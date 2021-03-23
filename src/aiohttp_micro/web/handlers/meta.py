@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from aiohttp_micro.handlers import json_response
+from aiohttp_micro.web.handlers import json_response
 
 
 async def index(request: web.Request) -> web.Response:

@@ -4,8 +4,8 @@ from enum import Enum
 import pytest  # type: ignore
 from marshmallow import fields, Schema, ValidationError
 
-from aiohttp_micro.entities import Entity
-from aiohttp_micro.schemas import EntitySchema, EnumField
+from aiohttp_micro.core.entities import Entity
+from aiohttp_micro.core.schemas import EntitySchema, EnumField
 
 
 class Status(Enum):

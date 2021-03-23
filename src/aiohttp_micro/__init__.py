@@ -8,10 +8,9 @@ import structlog  # type: ignore
 from aiohttp import web
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
-from aiohttp_micro.handlers import meta
-from aiohttp_micro.middlewares import (
+from aiohttp_micro.web.handlers import meta
+from aiohttp_micro.web.middlewares import (
     catch_exceptions_middleware,
-    LOGGER,
     logging_middleware_factory,
 )
 
@@ -55,8 +54,7 @@ def setup(
     app["hostname"] = socket.gethostname()
     app["distribution"] = pkg_resources.get_distribution(package_name)
 
-    logger = structlog.get_logger()
-    app[LOGGER] = logger.bind(
+    app["logger"] = structlog.get_logger(
         app_name=app["app_name"],
         hostname=app["hostname"],
         version=app["distribution"].version,
@@ -75,9 +73,5 @@ def setup(
     app.middlewares.append(catch_exceptions_middleware)  # type: ignore
     app.middlewares.append(logging_middleware_factory())
 
-    app.router.add_routes(
-        [
-            web.get("/-/health", meta.health, name="health"),
-            web.get("/-/meta", meta.index, name="index"),
-        ]
-    )
+    app.router.add_get("/-/health", meta.health, name="health")
+    app.router.add_get("/-/meta", meta.index, name="meta")
