@@ -1,11 +1,8 @@
-from typing import Any, Awaitable, Callable, Dict, Type
+from typing import Any, Dict, Type
 
 import ujson
 from aiohttp import web
 from marshmallow import Schema, ValidationError
-
-
-Handler = Callable[[web.Request], Awaitable[web.Response]]
 
 
 async def get_payload(request: web.Request) -> Dict[str, Any]:

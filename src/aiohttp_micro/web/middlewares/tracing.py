@@ -2,7 +2,7 @@ import aiozipkin
 from aiohttp import web
 from aiozipkin.aiohttp_helpers import _get_span
 
-from aiohttp_micro.web.handlers import Handler
+from aiohttp_micro.web.middlewares import Handler
 
 
 def tracing_middleware_factory(

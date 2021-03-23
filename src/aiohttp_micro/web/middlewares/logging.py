@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from aiohttp_micro.web.handlers import Handler
+from aiohttp_micro.web.middlewares import Handler
 
 
 def logging_middleware_factory(tracing_header: str = "X-B3-Traceid"):

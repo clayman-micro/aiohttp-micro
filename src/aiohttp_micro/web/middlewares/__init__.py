@@ -1,7 +1,10 @@
+from typing import Awaitable, Callable
+
 from aiohttp import web
 from sentry_sdk import capture_exception
 
-from aiohttp_micro.web.handlers import Handler
+
+Handler = Callable[[web.Request], Awaitable[web.Response]]
 
 
 @web.middleware

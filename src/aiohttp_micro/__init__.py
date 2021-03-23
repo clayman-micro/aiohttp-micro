@@ -1,16 +1,31 @@
 import socket
-from typing import Optional
+from typing import Dict, Optional, Union
 
 import config
 import pkg_resources
 import sentry_sdk
 import structlog  # type: ignore
-from aiohttp import web
+from aiohttp.web import Application
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Enum,
+    Gauge,
+    Histogram,
+    Info,
+    Summary,  # type: ignore
+)
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
-from aiohttp_micro.web.handlers import meta
+from aiohttp_micro.web.handlers import meta, metrics
 from aiohttp_micro.web.middlewares import common_middleware
 from aiohttp_micro.web.middlewares.logging import logging_middleware_factory
+from aiohttp_micro.web.middlewares.metrics import (
+    middleware as metrics_middleware,
+)
+
+
+Metric = Union[Counter, Gauge, Summary, Histogram, Info, Enum]
 
 
 structlog.configure(
@@ -39,10 +54,11 @@ class AppConfig(config.Config):
 
 
 def setup(
-    app: web.Application,
+    app: Application,
     app_name: str,
     config: config.Config,
     package_name: Optional[str] = None,
+    extra_metrics: Dict[str, Metric] = None,
 ) -> None:
     if not package_name:
         package_name = app_name
@@ -52,6 +68,33 @@ def setup(
     app["app_name"] = app_name
     app["hostname"] = socket.gethostname()
     app["distribution"] = pkg_resources.get_distribution(package_name)
+
+    app["metrics_registry"] = CollectorRegistry()
+    app["metrics"] = {
+        "requests_total": Counter(
+            "requests_total",
+            "Total request count",
+            ("app_name", "method", "endpoint", "http_status"),
+            registry=app["metrics_registry"],
+        ),
+        "requests_latency": Histogram(
+            "requests_latency_seconds",
+            "Request latency",
+            ("app_name", "endpoint"),
+            registry=app["metrics_registry"],
+        ),
+        "requests_in_progress": Gauge(
+            "requests_in_progress_total",
+            "Requests in progress",
+            ("app_name", "endpoint", "method"),
+            registry=app["metrics_registry"],
+        ),
+    }
+
+    if extra_metrics:
+        for key, metric in extra_metrics.items():
+            app["metrics"][key] = metric
+            app["metrics_registry"].register(metric)
 
     app["logger"] = structlog.get_logger(
         app_name=app["app_name"],
@@ -70,7 +113,9 @@ def setup(
             scope.set_tag("app_name", app["app_name"])
 
     app.middlewares.append(common_middleware)
+    app.middlewares.append(metrics_middleware)
     app.middlewares.append(logging_middleware_factory())
 
     app.router.add_get("/-/health", meta.health, name="health")
     app.router.add_get("/-/meta", meta.index, name="meta")
+    app.router.add_get("/-/metrics", metrics.handler, name="metrics")

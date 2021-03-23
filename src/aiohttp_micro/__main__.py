@@ -2,10 +2,10 @@ import asyncio
 
 import click
 import uvloop  # type: ignore
-from config import ConsulConfig, EnvValueProvider, load  # type: ignore
+from config import ConsulConfig, EnvValueProvider, load
 
 from aiohttp_micro.app import AppConfig, init
-from aiohttp_micro.management.server import server  # type: ignore
+from aiohttp_micro.cli.server import server
 
 
 @click.group()
