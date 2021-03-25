@@ -6,14 +6,14 @@ import pkg_resources
 import sentry_sdk
 import structlog  # type: ignore
 from aiohttp.web import Application
-from prometheus_client import (
+from prometheus_client import (  # type: ignore
     CollectorRegistry,
     Counter,
     Enum,
     Gauge,
     Histogram,
     Info,
-    Summary,  # type: ignore
+    Summary,
 )
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
@@ -112,9 +112,9 @@ def setup(
         with sentry_sdk.configure_scope() as scope:
             scope.set_tag("app_name", app["app_name"])
 
-    app.middlewares.append(common_middleware)
-    app.middlewares.append(metrics_middleware)
-    app.middlewares.append(logging_middleware_factory())
+    app.middlewares.append(common_middleware)  # type: ignore
+    app.middlewares.append(metrics_middleware)  # type: ignore
+    app.middlewares.append(logging_middleware_factory())  # type: ignore
 
     app.router.add_get("/-/health", meta.health, name="health")
     app.router.add_get("/-/meta", meta.index, name="meta")

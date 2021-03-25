@@ -11,7 +11,7 @@ from marshmallow import (
     ValidationError,
 )
 
-from aiohttp_micro.entities import Entity  # noqa: F401
+from aiohttp_micro.core.entities import Entity  # noqa: F401
 
 
 JSON = Dict[str, Any]
