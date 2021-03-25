@@ -1,13 +1,10 @@
-import asyncio
 import socket
 
-# import aiozipkin
 import click
 from aiohttp import web
 
 from aiohttp_micro.core.tools.consul import register, Service
-
-# from aiohttp_micro.web.middlewares import tracing_middleware_factory
+from aiohttp_micro.core.tools.zipkin import zipkin_context
 
 
 def get_address(default: str = "127.0.0.1") -> str:
@@ -41,7 +38,6 @@ def server(ctx):
 @click.pass_context
 def run(ctx, host, port, tags):
     app = ctx.obj["app"]
-    # loop = asyncio.get_event_loop()
 
     try:
         port = int(port)
@@ -57,6 +53,7 @@ def run(ctx, host, port, tags):
     else:
         address = get_address()
 
+    app.cleanup_ctx.append(zipkin_context(host, port))
     app.cleanup_ctx.append(
         register(
             Service(
@@ -70,26 +67,6 @@ def run(ctx, host, port, tags):
     )
 
     app["logger"].info(f"Application serving on http://{address}:{port}")
-
-    # endpoint = aiozipkin.create_endpoint(
-    #     app["app_name"], ipv4=address, port=port
-    # )
-    # tracer = loop.run_until_complete(
-    #     aiozipkin.create(
-    #         app["config"].zipkin.get_address(), endpoint, sample_rate=1.0,
-    #     )
-    # )
-
-    # app[aiozipkin.APP_AIOZIPKIN_KEY] = tracer
-
-    # async def close_aiozipkin(app: web.Application) -> None:
-    #     await app[aiozipkin.APP_AIOZIPKIN_KEY].close()
-
-    # app.on_cleanup.append(close_aiozipkin)
-
-    # app.middlewares.append(tracing_middleware_factory())
-
-    # aiozipkin.setup(app, tracer)
 
     web.run_app(app, host=host, port=port, print=None)
 
