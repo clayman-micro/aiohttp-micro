@@ -4,7 +4,7 @@ import click
 from aiohttp import web
 
 from aiohttp_micro.core.tools.consul import register, Service
-from aiohttp_micro.core.tools.zipkin import zipkin_context
+from aiohttp_micro.core.tools.zipkin import create_tracer
 
 
 def get_address(default: str = "127.0.0.1") -> str:
@@ -53,6 +53,7 @@ def run(ctx, host, port, tags):
 
     consul_service = Service(name=app["app_name"], hostname=app["hostname"], host=address, port=port, tags=tags)
 
+    app.cleanup_ctx.append(create_tracer(host, port))
     app.cleanup_ctx.append(register(consul_service))
 
     app["logger"].info(f"Application serving on http://{address}:{port}")

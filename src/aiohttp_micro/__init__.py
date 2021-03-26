@@ -1,5 +1,5 @@
 import socket
-from typing import Dict, Optional, Union
+from typing import Dict, Iterable, Optional, Union
 
 import config
 import pkg_resources
@@ -12,9 +12,8 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from aiohttp_micro.web.handlers import meta, metrics
 from aiohttp_micro.web.middlewares import common_middleware
 from aiohttp_micro.web.middlewares.logging import logging_middleware_factory
-from aiohttp_micro.web.middlewares.metrics import (
-    middleware as metrics_middleware,
-)
+from aiohttp_micro.web.middlewares.metrics import middleware as metrics_middleware
+from aiohttp_micro.web.middlewares.tracing import tracing_middleware_factory
 
 
 Metric = Union[Counter, Gauge, Summary, Histogram, Info, Enum]
@@ -108,10 +107,10 @@ def setup_metrics(app: Application, extra_metrics: Dict[str, Metric] = None) -> 
     app.router.add_get("/-/metrics", metrics.handler, name="metrics")
 
 
-    app.middlewares.append(common_middleware)  # type: ignore
-    app.middlewares.append(metrics_middleware)  # type: ignore
-    app.middlewares.append(logging_middleware_factory())  # type: ignore
+def setup_tracing(app: Application, exclude_routes: Optional[Iterable[str]] = None) -> None:
+    if not exclude_routes:
+        exclude_routes = []
 
-    app.router.add_get("/-/health", meta.health, name="health")
-    app.router.add_get("/-/meta", meta.index, name="meta")
-    app.router.add_get("/-/metrics", metrics.handler, name="metrics")
+    app.middlewares.append(  # type: ignore
+        tracing_middleware_factory(exclude_routes=["metrics", *exclude_routes])
+    )
