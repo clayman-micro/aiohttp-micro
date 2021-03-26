@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-import ujson
+import orjson
 from aiohttp import ClientSession
 
 
@@ -46,7 +46,7 @@ class Consul:
 
         done = False
         async with ClientSession() as session:
-            async with session.put(url, data=ujson.dumps(payload)) as resp:
+            async with session.put(url, data=orjson.dumps(payload)) as resp:
                 done = resp.status == 200
 
         return done

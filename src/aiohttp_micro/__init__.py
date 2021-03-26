@@ -2,6 +2,7 @@ import socket
 from typing import Dict, Iterable, Optional, Union
 
 import config
+import orjson  # type: ignore
 import pkg_resources
 import sentry_sdk
 import structlog  # type: ignore
@@ -20,11 +21,13 @@ Metric = Union[Counter, Gauge, Summary, Histogram, Info, Enum]
 
 
 structlog.configure(
+    cache_logger_on_first_use=True,
     processors=[
         structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer(),
-    ]
+        structlog.processors.JSONRenderer(serializer=orjson.dumps),
+    ],
+    logger_factory=structlog.BytesLoggerFactory(),
 )
 
 

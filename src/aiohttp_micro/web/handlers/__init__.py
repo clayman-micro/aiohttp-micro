@@ -1,6 +1,6 @@
 from typing import Any, Dict, Type
 
-import ujson
+import orjson
 from aiohttp import web
 from marshmallow import Schema, ValidationError
 
@@ -14,7 +14,7 @@ async def get_payload(request: web.Request) -> Dict[str, Any]:
 
 
 def json_response(data, status: int = 200, **kwargs) -> web.Response:
-    return web.json_response(data, dumps=ujson.dumps, status=status, **kwargs)
+    return web.Response(body=orjson.dumps(data), status=status, content_type="application/json", **kwargs)
 
 
 def validate_payload(schema_cls: Type[Schema]):
