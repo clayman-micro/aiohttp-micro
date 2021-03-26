@@ -5,9 +5,7 @@ from aiohttp_micro.web.middlewares import Handler
 
 def logging_middleware_factory(tracing_header: str = "X-B3-Traceid"):
     @web.middleware
-    async def middleware(
-        request: web.Request, handler: Handler
-    ) -> web.Response:
+    async def middleware(request: web.Request, handler: Handler) -> web.Response:
         request["logger"] = request.app["logger"]
 
         trace_id = request.headers.get(tracing_header, None)
@@ -16,9 +14,7 @@ def logging_middleware_factory(tracing_header: str = "X-B3-Traceid"):
 
         response = await handler(request)
 
-        request["logger"].debug(
-            f"{request.method} {request.path} {response.status}"
-        )
+        request["logger"].debug(f"{request.method} {request.path} {response.status}")
 
         return response
 

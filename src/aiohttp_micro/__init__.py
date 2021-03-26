@@ -6,15 +6,7 @@ import pkg_resources
 import sentry_sdk
 import structlog  # type: ignore
 from aiohttp.web import Application
-from prometheus_client import (  # type: ignore
-    CollectorRegistry,
-    Counter,
-    Enum,
-    Gauge,
-    Histogram,
-    Info,
-    Summary,
-)
+from prometheus_client import CollectorRegistry, Counter, Enum, Gauge, Histogram, Info, Summary  # type: ignore
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from aiohttp_micro.web.handlers import meta, metrics
@@ -53,13 +45,7 @@ class AppConfig(config.Config):
     sentry_dsn = config.StrField()
 
 
-def setup(
-    app: Application,
-    app_name: str,
-    config: config.Config,
-    package_name: Optional[str] = None,
-    extra_metrics: Dict[str, Metric] = None,
-) -> None:
+def setup(app: Application, app_name: str, config: AppConfig, package_name: Optional[str] = None) -> None:
     if not package_name:
         package_name = app_name
 
@@ -69,6 +55,30 @@ def setup(
     app["hostname"] = socket.gethostname()
     app["distribution"] = pkg_resources.get_distribution(package_name)
 
+    if config.sentry_dsn:
+        dsn = str(config.sentry_dsn)
+        sentry_sdk.init(
+            dsn=dsn, integrations=[AioHttpIntegration()], release=app["distribution"].version,
+        )
+
+        with sentry_sdk.configure_scope() as scope:
+            scope.set_tag("app_name", app["app_name"])
+
+    app.middlewares.append(common_middleware)  # type: ignore
+
+    app.router.add_get("/-/health", meta.health, name="health")
+    app.router.add_get("/-/meta", meta.index, name="meta")
+
+
+def setup_logging(app: Application) -> None:
+    app["logger"] = structlog.get_logger(
+        app_name=app["app_name"], hostname=app["hostname"], version=app["distribution"].version,
+    )
+
+    app.middlewares.append(logging_middleware_factory())  # type: ignore
+
+
+def setup_metrics(app: Application, extra_metrics: Dict[str, Metric] = None) -> None:
     app["metrics_registry"] = CollectorRegistry()
     app["metrics"] = {
         "requests_total": Counter(
@@ -78,10 +88,7 @@ def setup(
             registry=app["metrics_registry"],
         ),
         "requests_latency": Histogram(
-            "requests_latency_seconds",
-            "Request latency",
-            ("app_name", "endpoint"),
-            registry=app["metrics_registry"],
+            "requests_latency_seconds", "Request latency", ("app_name", "endpoint"), registry=app["metrics_registry"],
         ),
         "requests_in_progress": Gauge(
             "requests_in_progress_total",
@@ -96,21 +103,10 @@ def setup(
             app["metrics"][key] = metric
             app["metrics_registry"].register(metric)
 
-    app["logger"] = structlog.get_logger(
-        app_name=app["app_name"],
-        hostname=app["hostname"],
-        version=app["distribution"].version,
-    )
+    app.middlewares.append(metrics_middleware)  # type: ignore
 
-    if "config" in app and app["config"].sentry_dsn:
-        sentry_sdk.init(
-            dsn=app["config"].sentry_dsn,
-            integrations=[AioHttpIntegration()],
-            release=app["distribution"].version,
-        )
+    app.router.add_get("/-/metrics", metrics.handler, name="metrics")
 
-        with sentry_sdk.configure_scope() as scope:
-            scope.set_tag("app_name", app["app_name"])
 
     app.middlewares.append(common_middleware)  # type: ignore
     app.middlewares.append(metrics_middleware)  # type: ignore

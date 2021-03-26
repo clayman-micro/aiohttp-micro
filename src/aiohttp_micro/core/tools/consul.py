@@ -72,16 +72,12 @@ def register(service: Service):
 
         await consul.register(service)
 
-        app["logger"].info(
-            f"Register service {service.service_name} in Consul Catalog"
-        )
+        app["logger"].info(f"Register service {service.service_name} in Consul Catalog")
 
         yield
 
         await consul.deregister(service)
 
-        app["logger"].info(
-            f"Remove service {service.service_name} from Consul Catalog"
-        )
+        app["logger"].info(f"Remove service {service.service_name} from Consul Catalog")
 
     return ctx

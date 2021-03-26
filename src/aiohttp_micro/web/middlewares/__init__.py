@@ -8,9 +8,7 @@ Handler = Callable[[web.Request], Awaitable[web.Response]]
 
 
 @web.middleware
-async def common_middleware(
-    request: web.Request, handler: Handler
-) -> web.Response:
+async def common_middleware(request: web.Request, handler: Handler) -> web.Response:
     try:
         return await handler(request)
     except Exception as exc:

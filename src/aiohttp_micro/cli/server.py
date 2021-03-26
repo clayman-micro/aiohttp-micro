@@ -32,9 +32,7 @@ def server(ctx):
 @server.command()
 @click.option("--host", default=None, help="Specify application host")
 @click.option("--port", default=5000, help="Specify application port")
-@click.option(
-    "--tags", "-t", multiple=True, help="Specify tags for Consul Catalog"
-)
+@click.option("--tags", "-t", multiple=True, help="Specify tags for Consul Catalog")
 @click.pass_context
 def run(ctx, host, port, tags):
     app = ctx.obj["app"]
@@ -53,18 +51,9 @@ def run(ctx, host, port, tags):
     else:
         address = get_address()
 
-    app.cleanup_ctx.append(zipkin_context(host, port))
-    app.cleanup_ctx.append(
-        register(
-            Service(
-                name=app["app_name"],
-                hostname=app["hostname"],
-                host=address,
-                port=port,
-                tags=tags,
-            )
-        )
-    )
+    consul_service = Service(name=app["app_name"], hostname=app["hostname"], host=address, port=port, tags=tags)
+
+    app.cleanup_ctx.append(register(consul_service))
 
     app["logger"].info(f"Application serving on http://{address}:{port}")
 
