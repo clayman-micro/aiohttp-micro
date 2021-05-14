@@ -51,10 +51,11 @@ def run(ctx, host, port, tags):
     else:
         address = get_address()
 
-    consul_service = Service(name=app["app_name"], hostname=app["hostname"], host=address, port=port, tags=tags)
+    if app["config"].consul.enabled:
+        consul_service = Service(name=app["app_name"], hostname=app["hostname"], host=address, port=port, tags=tags)
+        app.cleanup_ctx.append(register(consul_service))
 
     app.cleanup_ctx.append(create_tracer(host, port))
-    app.cleanup_ctx.append(register(consul_service))
 
     app["logger"].info(f"Application serving on http://{address}:{port}")
 

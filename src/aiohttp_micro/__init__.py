@@ -31,6 +31,12 @@ structlog.configure(
 )
 
 
+class ConsulConfig(config.Config):
+    host = config.StrField(default="localhost", env="CONSUL_HOST")
+    port = config.IntField(default=8500, env="CONSUL_PORT")
+    enabled = config.BoolField(default=False, env="CONSUL_ENABLED")
+
+
 class ZipkinConfig(config.Config):
     host = config.StrField(default="localhost", env="ZIPKIN_HOST")
     port = config.IntField(default=9411, env="ZIPKIN_PORT")
@@ -41,7 +47,7 @@ class ZipkinConfig(config.Config):
 
 
 class AppConfig(config.Config):
-    consul = config.NestedField[config.ConsulConfig](config.ConsulConfig)
+    consul = config.NestedField[ConsulConfig](ConsulConfig)
     debug = config.BoolField(default=False)
     zipkin = config.NestedField[ZipkinConfig](ZipkinConfig)
     sentry_dsn = config.StrField()
