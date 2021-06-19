@@ -38,19 +38,7 @@ test-all:
 	tox
 
 run:
-	poetry run python3 -m aiohttp_micro --debug server run --host=$(HOST) --port=$(PORT) \
-    -t develop \
-    -t 'traefik.enable=true' \
-    -t 'traefik.http.routers.micro.rule=Host(`$(DOMAIN)`)' \
-    -t 'traefik.http.routers.micro.entrypoints=web' \
-    -t 'traefik.http.routers.micro.service=micro' \
-    -t 'traefik.http.routers.micro.middlewares=micro-redirect@consulcatalog' \
-    -t 'traefik.http.routers.micro-secure.rule=Host(`$(DOMAIN)`)' \
-    -t 'traefik.http.routers.micro-secure.entrypoints=secure' \
-    -t 'traefik.http.routers.micro-secure.service=micro' \
-    -t 'traefik.http.routers.micro-secure.tls=true' \
-    -t 'traefik.http.middlewares.micro-redirect.redirectscheme.scheme=https' \
-    -t 'traefik.http.middlewares.micro-redirect.redirectscheme.permanent=true'
+	poetry run python3 -m aiohttp_micro --debug server run --host=$(HOST) --port=$(PORT)
 
 build: clean-build
 	poetry build
