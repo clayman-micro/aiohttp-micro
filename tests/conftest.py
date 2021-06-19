@@ -19,7 +19,7 @@ def distribution(monkeypatch):
     monkeypatch.setattr(pkg_resources, "get_distribution", patch_distribution)
 
 
-@pytest.yield_fixture(scope="function")
+@pytest.fixture(scope="function")
 def app(loop, distribution):
     config = AppConfig()
 
