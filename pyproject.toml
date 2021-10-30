@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "aiohttp_micro"
-version = "0.5.0"
+version = "0.6.0"
 description = "Collection of useful things for aiohttp.web-based microservices"
 authors = ["Kirill Sumorokov <sumorokov.k@gmail.com>"]
 license = "MIT"
@@ -30,10 +30,10 @@ click = "^7.0"
 config = {git = "https://github.com/clayman083/config.git", rev = "v0.3.0"}
 marshmallow = "^3.4.0"
 prometheus-client = "^0.9.0"
-python = "^3.7"
+python = "^3.8"
 sentry-sdk = "^0.12.2"
 structlog = "^20.1.0"
-uvloop = "^0.14.0"
+uvloop = "^0.16.0"
 orjson = "^3.5.1"
 
 [tool.poetry.dev-dependencies]
