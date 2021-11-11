@@ -39,9 +39,6 @@
 
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-      "--max-line-length=120",
-    ],
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": ["--line-length", "120"],
     "python.testing.pytestEnabled": true,
@@ -51,21 +48,22 @@
       ".tox/**"
     ],
 
+    "python.envFile": "${workspaceFolder}/.env",
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python3",
 
     "python.analysis.extraPaths": [
       "${workspaceFolder}",
-      "${workspaceFolder}/.venv/lib/python3.9",
-      "${workspaceFolder}/.venv/lib/python3.9/site-packages"
+      "${workspaceFolder}/.venv/lib/python3.10",
+      "${workspaceFolder}/.venv/lib/python3.10/site-packages"
     ],
 
     "python.autoComplete.extraPaths": [
       "${workspaceFolder}",
-      "${workspaceFolder}/.venv/lib/python3.9",
-      "${workspaceFolder}/.venv/lib/python3.9/site-packages"
+      "${workspaceFolder}/.venv/lib/python3.10",
+      "${workspaceFolder}/.venv/lib/python3.10/site-packages"
     ],
 
     "[python]": {
         "editor.formatOnSave": true
     }
-}
+  }
