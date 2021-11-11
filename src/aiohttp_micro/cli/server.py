@@ -3,7 +3,6 @@ import socket
 import click
 from aiohttp import web
 
-from aiohttp_micro.core.tools.consul import register, Service
 from aiohttp_micro.core.tools.zipkin import create_tracer
 
 
@@ -50,10 +49,6 @@ def run(ctx, host, port, tags):
         address = "127.0.0.1"
     else:
         address = get_address()
-
-    if app["config"].consul.enabled:
-        consul_service = Service(name=app["app_name"], hostname=app["hostname"], host=address, port=port, tags=tags)
-        app.cleanup_ctx.append(register(consul_service))
 
     app.cleanup_ctx.append(create_tracer(host, port))
 

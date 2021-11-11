@@ -23,23 +23,6 @@ from aiohttp_micro.web.middlewares.tracing import tracing_middleware_factory
 Metric = Union[Counter, Gauge, Summary, Histogram, Info, Enum]
 
 
-structlog.configure(
-    cache_logger_on_first_use=True,
-    processors=[
-        structlog.stdlib.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer(serializer=orjson.dumps),
-    ],
-    logger_factory=structlog.BytesLoggerFactory(),
-)
-
-
-class ConsulConfig(config.Config):
-    host = config.StrField(default="localhost", env="CONSUL_HOST")
-    port = config.IntField(default=8500, env="CONSUL_PORT")
-    enabled = config.BoolField(default=False, env="CONSUL_ENABLED")
-
-
 class ZipkinConfig(config.Config):
     host = config.StrField(default="localhost", env="ZIPKIN_HOST")
     port = config.IntField(default=9411, env="ZIPKIN_PORT")
@@ -50,10 +33,9 @@ class ZipkinConfig(config.Config):
 
 
 class AppConfig(config.Config):
-    consul = config.NestedField[ConsulConfig](ConsulConfig)
     debug = config.BoolField(default=False)
+    sentry_dsn = config.StrField(path="sentry-dsn", env="SENTRY_DSN")
     zipkin = config.NestedField[ZipkinConfig](ZipkinConfig)
-    sentry_dsn = config.StrField()
 
 
 def setup(app: Application, app_name: str, config: AppConfig, package_name: Optional[str] = None) -> None:
@@ -67,9 +49,8 @@ def setup(app: Application, app_name: str, config: AppConfig, package_name: Opti
     app["distribution"] = pkg_resources.get_distribution(package_name)
 
     if config.sentry_dsn:
-        dsn = str(config.sentry_dsn)
         sentry_sdk.init(
-            dsn=dsn, integrations=[AioHttpIntegration()], release=app["distribution"].version,
+            dsn=str(config.sentry_dsn), integrations=[AioHttpIntegration()], release=app["distribution"].version,
         )
 
         with sentry_sdk.configure_scope() as scope:
@@ -82,6 +63,16 @@ def setup(app: Application, app_name: str, config: AppConfig, package_name: Opti
 
 
 def setup_logging(app: Application) -> None:
+    structlog.configure(
+        cache_logger_on_first_use=True,
+        processors=[
+            structlog.stdlib.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.JSONRenderer(serializer=orjson.dumps),
+        ],
+        logger_factory=structlog.BytesLoggerFactory(),
+    )
+
     app["logger"] = structlog.get_logger(
         app_name=app["app_name"], hostname=app["hostname"], version=app["distribution"].version,
     )
