@@ -1,5 +1,5 @@
 import socket
-from typing import Dict, Iterable, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 import config
 import orjson  # type: ignore
@@ -119,15 +119,18 @@ def setup_tracing(app: Application, exclude_routes: Optional[Iterable[str]] = No
     )
 
 
+Operation = Tuple[str, str, openapi.OperationView]
+
+
 def setup_openapi(
     app: Application,
     *,
     title: str,
     version: str,
     description: str,
+    operations: List[Operation],
     openapi_version: str = "3.0.2",
     path: str = "/api/spec.json",
-    validate: bool = False,
     security: Optional[Tuple[str, Dict[str, str]]] = None,
 ) -> None:
 
@@ -144,19 +147,14 @@ def setup_openapi(
 
     app.router.add_get(path, openapi.handler, name="api.spec")
 
-    for route in app.router.routes():
-        if route.method.lower() == "head":
-            continue
+    for method, path, view in operations:
+        app.router.add_route(method, path, view.handle)
 
-        if hasattr(route.handler, "spec") and route.resource:
-            spec: openapi.OpenAPISpec = route.handler.spec
+        operation = view.spec.generate()
+        operation.setdefault("description", view.__doc__)
 
-            operation = spec.generate()
-            operation.setdefault("description", route.handler.__doc__)
+        app["spec"].path(
+            path=path, operations={method.lower(): operation},
+        )
 
-            app["spec"].path(
-                path=route.resource.canonical, operations={route.method.lower(): operation},
-            )
-
-    if validate:
-        validate_spec(app["spec"])
+    validate_spec(app["spec"])
