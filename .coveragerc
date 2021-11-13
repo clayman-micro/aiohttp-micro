@@ -1,6 +1,0 @@
-[run]
-branch = True
-omit =
-    aiohttp_micro/management/*
-
-source = aiohttp_micro

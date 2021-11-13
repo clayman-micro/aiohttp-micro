@@ -50,4 +50,8 @@ flake8-pytest = "*"
 mypy = "*"
 pytest = "*"
 pytest-aiohttp = "*"
+pytest-cov = "^3.0.0"
+pytest-mock = "^3.6.1"
+pytest-xdist = {extras = ["psutil"], version = "^2.4.0"}
 rope = "*"
+types-click = "^7.1.7"
