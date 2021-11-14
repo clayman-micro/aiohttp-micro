@@ -24,7 +24,7 @@ def schema():
 @pytest.mark.unit
 @pytest.mark.parametrize("status", (1, "1"))
 def test_load_enum_field(schema, status):
-    document = schema.load({"status": status})
+    document = schema.load({"status": status})  # act
 
     assert document["status"] == Status.active
 
@@ -53,7 +53,7 @@ def tag_schema():
 
 @pytest.mark.unit
 def test_load_entity(tag_schema):
-    tag = tag_schema.load({"name": "Food"})
+    tag = tag_schema.load({"name": "Food"})  # act
 
     assert tag == Tag(key=0, name="Food")
 
@@ -62,6 +62,6 @@ def test_load_entity(tag_schema):
 def test_serialize_entity(tag_schema):
     tag = Tag(key=1, name="Food")
 
-    serialized = tag_schema.dump(tag)
+    serialized = tag_schema.dump(tag)  # act
 
     assert serialized == {"id": 1, "name": "Food"}

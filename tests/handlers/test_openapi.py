@@ -8,7 +8,7 @@ from aiohttp_micro.web.handlers.openapi import OpenAPISpec, ParameterIn, Paramet
 def test_simple_operation():
     spec = OpenAPISpec(operation="testOperation", responses={HTTPStatus.OK: "Plain text response"}, tags=["test"])
 
-    operation = spec.generate()
+    operation = spec.generate()  # act
 
     assert operation == {
         "operationId": "testOperation",
@@ -52,7 +52,7 @@ class ItemResponseSchema(ResponseSchema):
 def test_simple_json_operation():
     spec = OpenAPISpec(operation="fetchCollection", responses={HTTPStatus.OK: CollectionResponseSchema})
 
-    operation = spec.generate()
+    operation = spec.generate()  # act
 
     assert operation == {
         "operationId": "fetchCollection",
@@ -70,7 +70,7 @@ def test_simple_json_operation_with_params():
         operation="fetchCollection", parameters=[CollectionFilters], responses={HTTPStatus.OK: CollectionResponseSchema}
     )
 
-    operation = spec.generate()
+    operation = spec.generate()  # act
 
     assert operation == {
         "operationId": "fetchCollection",
@@ -89,7 +89,7 @@ def test_simple_operation_with_payload():
         operation="addItem", payload=AddItemPayloadSchema, responses={HTTPStatus.CREATED: ItemResponseSchema}
     )
 
-    operation = spec.generate()
+    operation = spec.generate()  # act
 
     assert operation == {
         "operationId": "addItem",
